@@ -41,7 +41,12 @@ def parse_args():
 
 def load_selected_class_names(path: str):
     with open(path, 'r', encoding='utf-8') as f:
-        return [line.strip() for line in f if line.strip()]
+        selected = [line.strip() for line in f if line.strip()]
+
+    if not selected:
+        raise ValueError(f'Selected classes file is empty: {path}')
+
+    return selected
 
 
 def make_val_pipeline(dataset_name: str,
@@ -54,6 +59,10 @@ def make_val_pipeline(dataset_name: str,
 
     table = None
     if selected_class_names is not None:
+        missing = [name for name in selected_class_names if name not in class_names]
+        if missing:
+            raise ValueError(f'Selected class names not found in dataset: {missing}')
+
         selected_indices = [class_names.index(name) for name in selected_class_names]
         keys = tf.constant(selected_indices, dtype=tf.int64)
         values = tf.range(len(selected_indices), dtype=tf.int64)
@@ -66,7 +75,7 @@ def make_val_pipeline(dataset_name: str,
         image = tf.cast(example['image'], tf.float32)
         image = tf.image.resize(image, (img_size, img_size))
         image = image / 127.5 - 1.0
-        label = example['label']
+        label = tf.cast(example['label'], tf.int64)
 
         if table is not None:
             label = table.lookup(label)
@@ -75,7 +84,7 @@ def make_val_pipeline(dataset_name: str,
 
     if table is not None:
         def filter_selected(example):
-            label = example['label']
+            label = tf.cast(example['label'], tf.int64)
             return tf.not_equal(table.lookup(label), -1)
 
         ds = ds.filter(filter_selected)
