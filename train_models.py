@@ -210,7 +210,7 @@ def build_efficientnet_transfer(num_classes: int, input_shape: Tuple[int, int, i
         tf.keras.layers.Input(shape=input_shape),
         
         # Preprocessing layer
-        tf.keras.applications.efficientnet.preprocess_input,
+        tf.keras.layers.Lambda(tf.keras.applications.efficientnet.preprocess_input),
         
         # Base model
         base_model,
