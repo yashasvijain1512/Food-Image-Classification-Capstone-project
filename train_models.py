@@ -370,7 +370,7 @@ def train_model(model: tf.keras.Model,
             os.path.join(output_dir, f'{model_name}_best.h5'),
             monitor='val_accuracy',
             save_best_only=True,
-        ),
+        ),  
     ]
     
     logger.info(f'Training {model_name} for {num_classes} classes, {epochs} epochs')

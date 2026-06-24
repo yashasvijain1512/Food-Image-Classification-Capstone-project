@@ -1,0 +1,43 @@
+# Version control
+.git
+.gitignore
+.github/
+
+# Development
+.venv
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Documentation and notebooks
+notebooks/
+README.md
+*.md
+
+# Testing
+tests/
+test_*.py
+.coverage
+htmlcov/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Environment
+.env
+.env.local

@@ -80,6 +80,18 @@ uvicorn app:app --reload --host 0.0.0.0 --port 8000
 # then open http://localhost:8000/ to use the upload UI
 ```
 
+9) Run the Streamlit inference app:
+
+```bash
+streamlit run streamlit_app.py
+```
+
+If your model is saved to a custom directory or you want to change the image size, set environment variables before launching:
+
+```bash
+MODEL_DIR=models IMG_SIZE=224 TOP_K=3 streamlit run streamlit_app.py
+```
+
 **Notes & Best Practices**
 - The project uses TFDS streaming to avoid exporting the full Food-101 archive to disk; this conserves space and works well in constrained environments.
 - If disk space becomes tight, remove the TFDS cache at `~/tensorflow_datasets/` to free several GBs.
