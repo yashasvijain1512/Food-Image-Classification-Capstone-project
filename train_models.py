@@ -432,6 +432,7 @@ def finetune_transfer_model(model: tf.keras.Model,
         val_ds: Validation dataset
         model_name: Name for saving
         num_classes: Number of classes
+        class_names: List of class names
         epochs: Number of epochs for fine-tuning
         output_dir: Directory to save models
     
@@ -475,8 +476,10 @@ def finetune_transfer_model(model: tf.keras.Model,
         verbose=1,
     )
     
+    save_class_names(class_names, os.path.join(output_dir, f'{model_name}_finetuned_best_class_names.txt'))
     model_path = os.path.join(output_dir, f'{model_name}_finetuned_final.h5')
     model.save(model_path)
+    save_class_names(class_names, os.path.join(output_dir, f'{model_name}_finetuned_final_class_names.txt'))
     logger.info(f'Saved fine-tuned model to {model_path}')
     
     return {
@@ -613,6 +616,7 @@ def main():
             transfer_101, train_ds_all, val_ds_all,
             'efficientnet_101',
             train_info_all['num_classes'],
+            train_info_all['class_names'],
             args.finetune_epochs,
             args.output_dir,
         )
