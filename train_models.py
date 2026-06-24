@@ -330,11 +330,20 @@ def get_filtered_pipeline(split: str,
     return ds, info_dict
 
 
+def save_class_names(class_names: List[str], path: str) -> None:
+    """Save one class name per line to a text file."""
+    Path(os.path.dirname(path)).mkdir(parents=True, exist_ok=True)
+    with open(path, 'w', encoding='utf-8') as f:
+        for name in class_names:
+            f.write(f'{name}\n')
+
+
 def train_model(model: tf.keras.Model,
                 train_ds: tf.data.Dataset,
                 val_ds: tf.data.Dataset,
                 model_name: str,
                 num_classes: int,
+                class_names: List[str],
                 epochs: int = 10,
                 output_dir: str = 'models') -> Dict:
     """
@@ -383,9 +392,11 @@ def train_model(model: tf.keras.Model,
         verbose=1,
     )
     
-    # Save final model
+    # Save class names for the model artifacts
+    save_class_names(class_names, os.path.join(output_dir, f'{model_name}_best_class_names.txt'))
     model_path = os.path.join(output_dir, f'{model_name}_final.h5')
     model.save(model_path)
+    save_class_names(class_names, os.path.join(output_dir, f'{model_name}_final_class_names.txt'))
     logger.info(f'Saved model to {model_path}')
     
     return {
@@ -409,6 +420,7 @@ def finetune_transfer_model(model: tf.keras.Model,
                             val_ds: tf.data.Dataset,
                             model_name: str,
                             num_classes: int,
+                            class_names: List[str],
                             epochs: int = 10,
                             output_dir: str = 'models') -> Dict:
     """
@@ -531,6 +543,7 @@ def main():
             baseline, train_ds, val_ds,
             f'baseline_{class_label}',
             train_info['num_classes'],
+            train_info['class_names'],
             args.epochs,
             args.output_dir,
         )
@@ -546,6 +559,7 @@ def main():
             transfer, train_ds, val_ds,
             f'efficientnet_{class_label}',
             train_info['num_classes'],
+            train_info['class_names'],
             args.epochs,
             args.output_dir,
         )
@@ -575,6 +589,7 @@ def main():
             baseline_101, train_ds_all, val_ds_all,
             'baseline_101',
             train_info_all['num_classes'],
+            train_info_all['class_names'],
             args.epochs,
             args.output_dir,
         )
@@ -586,6 +601,7 @@ def main():
             transfer_101, train_ds_all, val_ds_all,
             'efficientnet_101',
             train_info_all['num_classes'],
+            train_info_all['class_names'],
             args.epochs,
             args.output_dir,
         )
